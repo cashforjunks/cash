@@ -24,14 +24,14 @@ export function QuoteForm() {
   // دالة لإرسال البيانات على واتساب
   const sendToWhatsApp = () => {
     const message = `
-طلب عرض مجاني:
-الاسم: ${formData.name}
-الهاتف: ${formData.phone}
-الايميل: ${formData.email}
-السيارة: ${formData.year} ${formData.make} ${formData.model}
-الحالة: ${formData.condition}
-الرمز البريدي: ${formData.zipCode}
-تفاصيل إضافية: ${formData.description}
+Get Your Free Quote:
+name: ${formData.name}
+mobile: ${formData.phone}
+email: ${formData.email}
+car: ${formData.year} ${formData.make} ${formData.model}
+statu: ${formData.condition}
+ZIP: ${formData.zipCode}
+Details: ${formData.description}
     `;
     const phoneNumber = "17089791549"; // ضع رقمك هنا بصيغة: 962XXXXXXXXX بدون +
     const url = `https://wa.me/${17089791549}?text=${encodeURIComponent(message)}`;
