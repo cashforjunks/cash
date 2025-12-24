@@ -21,10 +21,28 @@ export function QuoteForm() {
 
   const [submitted, setSubmitted] = useState(false);
 
+  // دالة لإرسال البيانات على واتساب
+  const sendToWhatsApp = () => {
+    const message = `
+طلب عرض مجاني:
+الاسم: ${formData.name}
+الهاتف: ${formData.phone}
+الايميل: ${formData.email}
+السيارة: ${formData.year} ${formData.make} ${formData.model}
+الحالة: ${formData.condition}
+الرمز البريدي: ${formData.zipCode}
+تفاصيل إضافية: ${formData.description}
+    `;
+    const phoneNumber = "17089791549"; // ضع رقمك هنا بصيغة: 962XXXXXXXXX بدون +
+    const url = `https://wa.me/${17089791549}?text=${encodeURIComponent(message)}`;
+    window.open(url, "_blank");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    // In a real app, this would send data to a backend
+    sendToWhatsApp(); // ترسل البيانات على واتساب
+    // إعادة تعيين النموذج بعد 3 ثواني
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
@@ -195,5 +213,3 @@ export function QuoteForm() {
     </div>
   );
 }
-
-
