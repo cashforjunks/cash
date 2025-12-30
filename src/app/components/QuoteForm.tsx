@@ -112,17 +112,7 @@ Details: ${formData.description}
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    placeholder="john@example.com"
-                  />
-                </div>
+               
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div className="space-y-2">
