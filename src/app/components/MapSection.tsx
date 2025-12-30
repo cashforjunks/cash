@@ -4,7 +4,7 @@ export function MapSection() {
       {/* عنوان القسم */}
       <div className="text-center mb-6">
         <h2 className="text-3xl font-bold text-gray-900">
-          Cash For Junks – Our Location
+          TOP Cash For Junks
         </h2>
       </div>
 
