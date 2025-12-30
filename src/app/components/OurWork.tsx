@@ -1,6 +1,6 @@
 const images = [
-  "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-  "https://images.unsplash.com/photo-1597008641621-3f8d9d5c8f1d",
+  "https://i.im.ge/2025/12/30/Bbtzvq.layering-2.webp",
+  "https://i.im.ge/2025/12/30/Bbtv6P.layering-1.webp",
   "https://images.unsplash.com/photo-1605559424843-9c3a4d4a1c33",
   "https://images.unsplash.com/photo-1503376780353-7e6692767b70",
   "https://images.unsplash.com/photo-1617814076367-b759c7d7e738",
