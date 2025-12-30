@@ -28,7 +28,7 @@ export function Hero() {
           className="block md:hidden absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url(https://PUT-MOBILE-IMAGE-URL-HERE.jpg)",
+              "url(https://www.cashforclunkers.org/wp-content/uploads/2021/06/Where-Can-I-Sell-My-Car-for-Cash-1-1.jpg)",
           }}
         />
 
