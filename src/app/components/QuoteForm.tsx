@@ -20,27 +20,18 @@ export function QuoteForm() {
 
   const [submitted, setSubmitted] = useState(false);
 
-  // دالة لإرسال البيانات على واتساب
-  const sendToWhatsApp = () => {
-    const message = `
-Get Your Free Quote:
-name: ${formData.name}
-mobile: ${formData.phone}
-car: ${formData.year} ${formData.make} ${formData.model}
-statu: ${formData.condition}
-ZIP: ${formData.zipCode}
-Details: ${formData.description}
-    `;
-    const phoneNumber = "17089791549"; // ضع رقمك هنا بصيغة: 962XXXXXXXXX بدون +
-    const url = `https://wa.me/${17089791549}?text=${encodeURIComponent(message)}`;
-    window.open(url, "_blank");
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    sendToWhatsApp(); // ترسل البيانات على واتساب
-    // إعادة تعيين النموذج بعد 3 ثواني
+
+    // إرسال البيانات للواتساب API Backend
+    await fetch("/api/send-whatsapp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    // إعادة تعيين الحقول
     setTimeout(() => {
       setSubmitted(false);
       setFormData({
@@ -61,103 +52,46 @@ Details: ${formData.description}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="mb-4">Get Your Free Quote</h2>
-          <p className="text-gray-600">
-            Fill out the form below and we'll get back to you with an offer within minutes!
-          </p>
+          <p className="text-gray-600">Fill out the form below and we'll contact you shortly.</p>
         </div>
 
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle>Vehicle Information</CardTitle>
-            <CardDescription>
-              Tell us about your vehicle to get an accurate quote
-            </CardDescription>
+            <CardDescription>Provide info to receive a quote</CardDescription>
           </CardHeader>
           <CardContent>
             {submitted ? (
               <div className="text-center py-8">
-                <div className="text-green-600 mb-4">
-                  <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="mb-2">Thank You!</h3>
-                <p className="text-gray-600">
-                  We've received your request. Our team will contact you shortly with a quote.
-                </p>
+                <h3 className="text-green-600 text-2xl mb-3">Thank You!</h3>
+                <p>Your request has been received.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
+
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name *</Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                      placeholder="John Doe"
-                    />
+                  <div>
+                    <Label>Full Name *</Label>
+                    <Input value={formData.name} onChange={(e)=>setFormData({...formData,name:e.target.value})} required />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number *</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      required
-                      placeholder="(555) 123-4567"
-                    />
+
+                  <div>
+                    <Label>Phone Number *</Label>
+                    <Input type="tel" value={formData.phone} onChange={(e)=>setFormData({...formData,phone:e.target.value})} required />
                   </div>
                 </div>
-
-               
 
                 <div className="grid md:grid-cols-3 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="year">Year *</Label>
-                    <Input
-                      id="year"
-                      value={formData.year}
-                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                      required
-                      placeholder="2015"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="make">Make *</Label>
-                    <Input
-                      id="make"
-                      value={formData.make}
-                      onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                      required
-                      placeholder="Toyota"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="model">Model *</Label>
-                    <Input
-                      id="model"
-                      value={formData.model}
-                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                      required
-                      placeholder="Camry"
-                    />
-                  </div>
+                  <div><Label>Year *</Label><Input value={formData.year} onChange={(e)=>setFormData({...formData,year:e.target.value})} required/></div>
+                  <div><Label>Make *</Label><Input value={formData.make} onChange={(e)=>setFormData({...formData,make:e.target.value})} required/></div>
+                  <div><Label>Model *</Label><Input value={formData.model} onChange={(e)=>setFormData({...formData,model:e.target.value})} required/></div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="condition">Condition *</Label>
-                    <Select
-                      value={formData.condition}
-                      onValueChange={(value) => setFormData({ ...formData, condition: value })}
-                      required
-                    >
-                      <SelectTrigger id="condition">
-                        <SelectValue placeholder="Select condition" />
-                      </SelectTrigger>
+                  <div>
+                    <Label>Condition *</Label>
+                    <Select value={formData.condition} onValueChange={(v)=>setFormData({...formData,condition:v})} required>
+                      <SelectTrigger><SelectValue placeholder="Select condition"/></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="running">Running</SelectItem>
                         <SelectItem value="not-running">Not Running</SelectItem>
@@ -166,31 +100,20 @@ Details: ${formData.description}
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">ZIP Code *</Label>
-                    <Input
-                      id="zipCode"
-                      value={formData.zipCode}
-                      onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
-                      required
-                      placeholder="12345"
-                    />
+
+                  <div>
+                    <Label>ZIP Code *</Label>
+                    <Input value={formData.zipCode} onChange={(e)=>setFormData({...formData,zipCode:e.target.value})} required />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="description">Additional Details</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    placeholder="Tell us more about your vehicle's condition, mileage, etc."
-                    rows={4}
-                  />
+                <div>
+                  <Label>Additional Details</Label>
+                  <Textarea rows={4} value={formData.description} onChange={(e)=>setFormData({...formData,description:e.target.value})}/>
                 </div>
 
                 <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" size="lg">
-                  Get My Free Quote
+                  Send Request
                 </Button>
               </form>
             )}
