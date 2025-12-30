@@ -49,7 +49,7 @@ export function Hero() {
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
           <div>
             <div className="mb-2">Fast Cash</div>
-            <div className="text-gray-300">Get paid in 24-48 hours</div>
+            <div className="text-gray-300">Get paid instantly</div>
           </div>
           <div>
             <div className="mb-2">Free Towing</div>
