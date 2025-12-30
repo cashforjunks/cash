@@ -1,8 +1,3 @@
-
-"use client";
-
-import Image from "next/image";
-
 const images = [
   "https://images.unsplash.com/photo-1568605114967-8130f3a36994",
   "https://images.unsplash.com/photo-1597008641621-3f8d9d5c8f1d",
@@ -31,12 +26,11 @@ export function OurWork() {
               key={index}
               className="relative group overflow-hidden rounded-2xl shadow-lg"
             >
-              <Image
+              <img
                 src={src}
                 alt={`Work ${index + 1}`}
-                width={600}
-                height={400}
                 className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110"
+                loading="lazy"
               />
 
               <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
