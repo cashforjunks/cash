@@ -16,10 +16,10 @@ export default function App() {
 
       <main>
         <Hero />
-        <HowItWorks />
-        <OurWork />
-        <Benefits />
         <QuoteForm />
+        <OurWork />
+        <HowItWorks />
+        <Benefits />
         <Testimonials />
         <FAQ />
         <MapSection />
