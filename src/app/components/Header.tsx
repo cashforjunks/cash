@@ -46,9 +46,10 @@ export function Header() {
 
                 <span className="flex items-center gap-2 text-xl font-semibold text-gray-900">
                   Cash For Junks Maximum LLS
+                  
 
                   
-                    }}
+                    
                   />
                 </span>
               </a>
