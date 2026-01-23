@@ -48,7 +48,7 @@ export function Header() {
                   Cash For Junks Maximum LLS
 
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg"
+                    src=""
                     alt="USA Flag"
                     className="h-5 w-7 rounded-sm"
                     style={{
