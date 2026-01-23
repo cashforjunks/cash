@@ -3,26 +3,9 @@ import React from "react";
 export const ServiceAreas = () => {
   const serviceAreas = {
     "Illinois (IL)": [
-      "Chicago",
-      "Calumet City",
-      "Harvey",
-      "Dolton",
-      "Blue Island",
-      "South Holland",
-      "Chicago Heights",
-      "Oak Lawn",
-      "Bridgeview",
-      "Crestwood",
-      "Summit",
-      "Worth",
-      "Markham",
-      "South Side Chicago",
+     
     ],
     "Indiana (IN)": [
-      "Hammond",
-      "Gary",
-      "East Chicago",
-      "Highland",
     ],
   };
 
