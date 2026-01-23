@@ -8,6 +8,7 @@ import { Testimonials } from "./components/Testimonials";
 import { FAQ } from "./components/FAQ";
 import { Footer } from "./components/Footer";
 import { MapSection } from "./components/MapSection";
+import { ServiceAreas } from "./components/ServiceAreas"; // ✅ أضفنا هذا
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
       <main>
         <Hero />
         <QuoteForm />
+        <ServiceAreas /> {/* ✅ قسم Service Areas قبل OurWork */}
         <OurWork />
         <HowItWorks />
         <Benefits />
