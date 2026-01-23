@@ -47,12 +47,7 @@ export function Header() {
                 <span className="flex items-center gap-2 text-xl font-semibold text-gray-900">
                   Cash For Junks Maximum LLS
 
-                  <img
-                    src=""
-                    alt="USA Flag"
-                    className="h-5 w-7 rounded-sm"
-                    style={{
-                      animation: "flagFloat 2.8s ease-in-out infinite"
+                  
                     }}
                   />
                 </span>
