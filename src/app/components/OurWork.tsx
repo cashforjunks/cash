@@ -1,9 +1,9 @@
 const images = [
   "https://i.im.ge/2026/01/20/GYdZgc.Untitled-1920-x-180-px-Facebook-Video.webp",
   "https://i.im.ge/2026/01/20/GYdVML.Untitled-1920-x-180-px-Facebook-Video-1.webp",
-  "https://i.im.ge/2025/12/30/Bbtzvq.layering-2.webp",
-  "https://i.im.ge/2025/12/30/Bbtv6P.layering-1.webp",
-  "https://i.im.ge/2025/12/30/Bbyf8J.Rectangle-27.webp",
+  "https://i.im.ge/2026/01/24/GVtTt4.WhatsApp-Image-2026-01-24-at-1-28-37-AM.jpeg",
+  "https://i.im.ge/2026/01/24/GVtQsD.WhatsApp-Image-2026-01-24-at-1-29-29-AM.jpeg",
+  "https://i.im.ge/2026/01/24/GVtozC.WhatsApp-Image-2026-01-24-at-1-29-30-AM.jpeg",
   "https://i.im.ge/2025/12/30/BbyzQy.2021-06-23.webp",
   "https://i.im.ge/2025/12/30/BbyHLS.2021-04-06.webp",
   "https://i.im.ge/2025/12/30/BbyV9a.2025-02-23.webp",
