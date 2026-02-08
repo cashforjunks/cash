@@ -71,11 +71,11 @@ export function Header() {
           {/* Actions */}
           <div className="flex items-center gap-4">
             <a
-              href="tel:+17089791549"
+              href="tel:+17087172104"
               className="hidden sm:flex items-center gap-2 text-green-600 hover:text-green-700"
             >
               <Phone className="h-4 w-4" />
-              <span>(708) 979-1549</span>
+              <span>(708) 717-2104</span>
             </a>
 
             <Button
