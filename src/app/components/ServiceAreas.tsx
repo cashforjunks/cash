@@ -22,7 +22,6 @@ export const ServiceAreas = () => {
     "Tinley Park",
     "Oak Lawn",
     "Berwyn",
-
     "Calumet City",
     "Harvey",
     "Hammond",
@@ -48,7 +47,7 @@ export const ServiceAreas = () => {
         </p>
 
         <div className="bg-white rounded-lg shadow p-6 max-w-4xl mx-auto">
-          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <ul className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
             {cities.map((city) => (
               <li key={city} className="flex items-center text-gray-800">
                 <span className="text-green-500 mr-2">✅</span>
