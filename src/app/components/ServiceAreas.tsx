@@ -1,13 +1,43 @@
 import React from "react";
 
 export const ServiceAreas = () => {
-  const serviceAreas = {
-    "Illinois (IL)": [
-     
-    ],
-    "Indiana (IN)": [
-    ],
-  };
+  const cities = [
+    "Chicago",
+    "Bridgeview",
+    "Oak Park",
+    "Evanston",
+    "Schaumburg",
+    "Naperville",
+    "Aurora",
+    "Joliet",
+    "Cicero",
+    "Arlington Heights",
+    "Downers Grove",
+    "Elgin",
+    "Des Plaines",
+    "Skokie",
+    "Waukegan",
+    "Bolingbrook",
+    "Palos Hills",
+    "Tinley Park",
+    "Oak Lawn",
+    "Berwyn",
+
+    "Calumet City",
+    "Harvey",
+    "Hammond",
+    "Gary",
+    "Dolton",
+    "Blue Island",
+    "South Holland",
+    "East Chicago",
+    "Chicago Heights",
+    "Crestwood",
+    "Summit",
+    "Worth",
+    "Markham",
+    "South Side Chicago"
+  ];
 
   return (
     <section className="py-16 bg-gray-50">
@@ -17,21 +47,15 @@ export const ServiceAreas = () => {
           We proudly provide our services in the following cities:
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {Object.entries(serviceAreas).map(([state, cities]) => (
-            <div key={state} className="bg-white rounded-lg shadow p-6">
-              <h3 className="text-xl font-semibold mb-4">{state}</h3>
-              <ul className="space-y-2">
-                {cities.map((city) => (
-                  <li key={city} className="flex items-center text-gray-800">
-                    {/* استخدم رمز ✅ بدلاً من أي مكتبة */}
-                    <span className="text-green-500 mr-2">✅</span>
-                    {city}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+        <div className="bg-white rounded-lg shadow p-6 max-w-4xl mx-auto">
+          <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {cities.map((city) => (
+              <li key={city} className="flex items-center text-gray-800">
+                <span className="text-green-500 mr-2">✅</span>
+                {city}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
