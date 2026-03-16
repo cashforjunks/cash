@@ -43,8 +43,16 @@ export function Hero() {
         </h1>
 
         <p className="mb-8 max-w-2xl mx-auto text-lg text-gray-200">
-          We buy any car in any condition. Free towing included. Get your instant
-          cash offer now!
+          Get Instant Cash For
+Your Junk Car
+Up to $2,500
+Same-Day Pickup
+Free Towing
+No Title Needed
+Instant offer to sell your car fast.
+
+Get an accurate offer in just minutes.
+
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
