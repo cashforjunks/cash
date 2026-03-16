@@ -53,12 +53,7 @@ export function Footer() {
                   >
                     (708) 886-6282
                   </a>
-                  <a
-                    href="tel:+17088866282"
-                    className="block text-green-400 hover:text-green-300"
-                  >
-                    (708) 886-6282
-                  </a>
+
                 </div>
               </li>
 
