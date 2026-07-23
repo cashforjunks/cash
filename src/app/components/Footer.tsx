@@ -48,7 +48,7 @@ export function Footer() {
                 <div>
                   <div>Call us 24/7</div>
                   <a
-                    href="tel:+17089791549"
+                    href="tel:+17089981730"
                     className="block text-green-400 hover:text-green-300"
                   >
                     (708) 979-1549
