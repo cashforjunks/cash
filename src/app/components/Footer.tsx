@@ -51,7 +51,7 @@ export function Footer() {
                     href="tel:+17089981730"
                     className="block text-green-400 hover:text-green-300"
                   >
-                    (708) 979-1549
+                    (708) 998-1730
                   </a>
 
                 </div>
