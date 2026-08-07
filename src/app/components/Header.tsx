@@ -2,7 +2,7 @@ import { Phone } from "lucide-react";
 import { Button } from "./ui/button";
 
 export function Header() {
-  const phoneNumber = "+17089981730";
+  const phoneNumber = "+17088866282";
   const phoneLink = `tel:${phoneNumber}`;
 
   const scrollToQuote = () => {
@@ -136,11 +136,11 @@ export function Header() {
             <a
               href={phoneLink}
               onClick={handlePhoneClick}
-              aria-label="Call us at 708 998 1730"
+              aria-label="Call us at 708 886 6282"
               className="hidden sm:flex items-center gap-2 text-green-600 hover:text-green-700"
             >
               <Phone className="h-4 w-4" />
-              <span>(708) 998-1730</span>
+              <span>(708) 886-6282</span>
             </a>
 
             <Button
