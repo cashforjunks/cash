@@ -63,7 +63,7 @@ export function Footer() {
                   href="mailto:carsjunk81@gmail.com"
                   className="hover:text-white transition-colors"
                 >
-                  carsjunk81@gmail.com
+                  info@topdollarjunk.online
                 </a>
               </li>
 
