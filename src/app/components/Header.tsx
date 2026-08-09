@@ -91,7 +91,7 @@ export function Header() {
               </div>
 
               <span className="text-lg font-semibold text-gray-900">
-                Cash For Junks Maximum LLS
+                Quick Cash Junk Cars LLC
               </span>
             </a>
           </div>
