@@ -21,9 +21,7 @@ export function Header() {
    * تسجيل تحويل Google Ads عند الضغط على رقم الهاتف،
    * ثم فتح تطبيق الاتصال.
    */
-  const handlePhoneClick = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-  ) => {
+  const handlePhoneClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
     const googleWindow = window as typeof window & {
@@ -35,7 +33,7 @@ export function Header() {
           value: number;
           currency: string;
           event_callback?: () => void;
-        },
+        }
       ) => void;
     };
 
@@ -68,27 +66,22 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo + Name */}
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-gray-100">
+      <div className="container mx-auto px-4">
+        <div className="flex h-20 items-center justify-between">
+
+          {/* Logo + Business Name */}
           <div className="flex items-center">
-            <a href="/" className="flex items-center gap-2">
-              <div className="text-green-600">
-                <svg
-                  className="h-8 w-8"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
+            <a
+              href="/"
+              className="flex items-center gap-3"
+              aria-label="Quick Cash Junk Cars LLC"
+            >
+              <img
+                src="/logo.png"
+                alt="Quick Cash Junk Cars LLC"
+                className="h-12 w-12 object-contain"
+              />
 
               <span className="text-lg font-semibold text-gray-900">
                 Quick Cash Junk Cars LLC
@@ -137,7 +130,7 @@ export function Header() {
               href={phoneLink}
               onClick={handlePhoneClick}
               aria-label="Call us at 708 886 6282"
-              className="hidden sm:flex items-center gap-2 text-green-600 hover:text-green-700"
+              className="hidden sm:flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors"
             >
               <Phone className="h-4 w-4" />
               <span>(708) 886-6282</span>
@@ -151,6 +144,7 @@ export function Header() {
               Get Quote
             </Button>
           </div>
+
         </div>
       </div>
     </header>
