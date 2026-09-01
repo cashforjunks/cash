@@ -40,6 +40,13 @@ export function Benefits() {
         <div className="text-center mb-16">
           <h2 className="mb-4">Why Choose Cash For Junks?</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
+            About Quick CASH JUNK CARS LLC
+
+Quick CASH JUNK CARS LLC is a junk car buying company serving
+customers throughout Illinois. We buy junk, old, damaged, and
+unwanted vehicles and provide cash offers with free towing.
+
+Call (708) 886-6282 to get your free quote. 
             We're not just another junk car buyer. Here's what makes us different.
           </p>
         </div>
