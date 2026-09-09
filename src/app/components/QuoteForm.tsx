@@ -61,50 +61,22 @@ export function QuoteForm() {
   };
 
   /**
-   * إرسال بيانات العميل إلى Telegram.
+   * إرسال بيانات العميل إلى API في السيرفر،
+   * والسيرفر يرسلها إلى البريد الإلكتروني.
    */
-  const sendToTelegram = async () => {
-    const BOT_TOKEN =
-      "8443764227:AAHnOFSJ5xSlOkZhN0AGnWi3sG6piCmvFUU";
-
-    const CHAT_ID = "7580038963";
-
-    const message = `
-📩 *New Quote Request*
-
-👤 Name: ${formData.name}
-📞 Phone: ${formData.phone}
-🚗 Car: ${formData.year} ${formData.make} ${formData.model}
-⚙ Status: ${formData.condition}
-📍 ZIP: ${formData.zipCode}
-📝 Details: ${formData.description || "No details"}
-`;
-
-    const response = await fetch(
-      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          chat_id: CHAT_ID,
-          text: message,
-          parse_mode: "Markdown",
-        }),
+  const sendQuoteByEmail = async () => {
+    const response = await fetch("/api/send-quote", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      body: JSON.stringify(formData),
+    });
+
+    const result = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      throw new Error("Failed to send the quote request.");
-    }
-
-    const result = await response.json();
-
-    if (!result.ok) {
-      throw new Error(
-        result.description || "Telegram rejected the request.",
-      );
+      throw new Error(result.error || "Failed to send the quote request.");
     }
 
     return result;
@@ -121,8 +93,8 @@ export function QuoteForm() {
     setSubmitError("");
 
     try {
-      // أولًا: إرسال الطلب إلى Telegram.
-      await sendToTelegram();
+      // أولًا: إرسال الطلب إلى البريد الإلكتروني.
+      await sendQuoteByEmail();
 
       // ثانيًا: تسجيل التحويل بعد نجاح الإرسال فقط.
       reportGoogleAdsConversion();
