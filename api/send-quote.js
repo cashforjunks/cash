@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 
+const GMAIL_USER = "carsjunk81@gmail.com";
 const RECIPIENT_EMAIL = "carsjunk81@gmail.com";
 
 function clean(value, maxLength = 500) {
@@ -7,6 +8,13 @@ function clean(value, maxLength = 500) {
     .replace(/[<>]/g, "")
     .trim()
     .slice(0, maxLength);
+}
+
+function getAppPassword() {
+  return String(process.env.GMAIL_APP_PASSWORD || "")
+    .trim()
+    .replace(/^['"]|['"]$/g, "")
+    .replace(/\s+/g, "");
 }
 
 export default async function handler(req, res) {
@@ -22,38 +30,25 @@ export default async function handler(req, res) {
   }
 
   try {
-    const gmailUser = String(
-      process.env.GMAIL_USER || ""
-    )
-      .trim()
-      .toLowerCase();
-
-    const gmailAppPassword = String(
-      process.env.GMAIL_APP_PASSWORD || ""
-    ).replace(/\s+/g, "");
-
-    if (!gmailUser) {
-      return res.status(500).json({
-        ok: false,
-        error: "GMAIL_USER is missing",
-      });
-    }
+    const gmailAppPassword = getAppPassword();
 
     if (!gmailAppPassword) {
+      console.error("GMAIL_APP_PASSWORD is missing");
+
       return res.status(500).json({
         ok: false,
-        error: "GMAIL_APP_PASSWORD is missing",
+        error: "Email service is not configured.",
       });
     }
 
     if (gmailAppPassword.length !== 16) {
-      console.error("Invalid Gmail App Password length:", {
+      console.error("Invalid Gmail App Password length", {
         length: gmailAppPassword.length,
       });
 
       return res.status(500).json({
         ok: false,
-        error: "Invalid Gmail App Password length",
+        error: "Invalid Gmail App Password configuration.",
       });
     }
 
@@ -101,9 +96,10 @@ export default async function handler(req, res) {
       host: "smtp.gmail.com",
       port: 465,
       secure: true,
+      authMethod: "LOGIN",
 
       auth: {
-        user: gmailUser,
+        user: GMAIL_USER,
         pass: gmailAppPassword,
       },
 
@@ -115,8 +111,9 @@ export default async function handler(req, res) {
     await transporter.verify();
 
     const info = await transporter.sendMail({
-      from: `"Top Dollar Junk Cars" <${gmailUser}>`,
+      from: `"Quick Cash Junk Cars LLC" <${GMAIL_USER}>`,
       to: RECIPIENT_EMAIL,
+      replyTo: GMAIL_USER,
 
       subject:
         `New Quote Request - ${data.year} ${data.make} ${data.model}`,
@@ -147,7 +144,7 @@ export default async function handler(req, res) {
             padding: 20px;
             border-radius: 8px 8px 0 0;
           ">
-            <h2 style="margin: 0;">
+            <h2 style="margin:0">
               New Quote Request
             </h2>
           </div>
@@ -171,48 +168,25 @@ export default async function handler(req, res) {
 
             <hr>
 
-            <p>
-              <strong>Year:</strong>
-              ${data.year}
-            </p>
-
-            <p>
-              <strong>Make:</strong>
-              ${data.make}
-            </p>
-
-            <p>
-              <strong>Model:</strong>
-              ${data.model}
-            </p>
-
-            <p>
-              <strong>Condition:</strong>
-              ${data.condition}
-            </p>
-
-            <p>
-              <strong>ZIP Code:</strong>
-              ${data.zipCode}
-            </p>
+            <p><strong>Year:</strong> ${data.year}</p>
+            <p><strong>Make:</strong> ${data.make}</p>
+            <p><strong>Model:</strong> ${data.model}</p>
+            <p><strong>Condition:</strong> ${data.condition}</p>
+            <p><strong>ZIP Code:</strong> ${data.zipCode}</p>
 
             <hr>
 
-            <p>
-              <strong>Additional Details:</strong>
-            </p>
-
-            <p>
-              ${data.description}
-            </p>
+            <p><strong>Additional Details:</strong></p>
+            <p>${data.description}</p>
           </div>
         </div>
       `,
     });
 
-    console.log("Quote email sent successfully:", {
+    console.log("Quote email sent successfully", {
       messageId: info.messageId,
       accepted: info.accepted,
+      rejected: info.rejected,
     });
 
     return res.status(200).json({
@@ -221,30 +195,38 @@ export default async function handler(req, res) {
     });
 
   } catch (error) {
-    console.error("Gmail SMTP error:", {
-      message:
-        error instanceof Error
-          ? error.message
-          : String(error),
+    const code =
+      error &&
+      typeof error === "object" &&
+      "code" in error
+        ? String(error.code)
+        : "UNKNOWN";
 
-      code:
-        error &&
-        typeof error === "object" &&
-        "code" in error
-          ? String(error.code)
-          : "UNKNOWN",
+    const responseCode =
+      error &&
+      typeof error === "object" &&
+      "responseCode" in error
+        ? String(error.responseCode)
+        : "UNKNOWN";
 
-      responseCode:
-        error &&
-        typeof error === "object" &&
-        "responseCode" in error
-          ? String(error.responseCode)
-          : "UNKNOWN",
+    const message =
+      error instanceof Error
+        ? error.message
+        : String(error);
+
+    console.error("Gmail SMTP error", {
+      message,
+      code,
+      responseCode,
+      user: GMAIL_USER,
     });
 
     return res.status(500).json({
       ok: false,
-      error: "Failed to send quote email.",
+      error:
+        code === "EAUTH"
+          ? "Gmail authentication failed."
+          : "Failed to send quote email.",
     });
   }
 }
