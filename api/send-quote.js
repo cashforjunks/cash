@@ -22,24 +22,57 @@ export default async function handler(req, res) {
   }
 
   try {
+    // قراءة بيانات Gmail من Vercel Environment Variables
     const gmailUser = String(
       process.env.GMAIL_USER || ""
     ).trim();
 
-    // يشيل المسافات من Google App Password تلقائياً
-    const gmailAppPassword = String(
+    const rawPassword = String(
       process.env.GMAIL_APP_PASSWORD || ""
-    ).replace(/\s+/g, "");
+    );
 
-    if (!gmailUser || !gmailAppPassword) {
+    // إزالة أي مسافات من App Password تلقائياً
+    const gmailAppPassword = rawPassword.replace(/\s+/g, "");
+
+    // هذا يظهر في Vercel Logs للتأكد من الإعدادات
+    // لا يقوم بطباعة الباسورد نفسه
+    console.log("GMAIL SMTP CHECK:", {
+      user: gmailUser,
+      passwordLength: gmailAppPassword.length,
+      hasAtGmail: gmailUser.endsWith("@gmail.com"),
+      environment: process.env.VERCEL_ENV || "unknown",
+    });
+
+    if (!gmailUser) {
+      console.error("GMAIL_USER is missing");
+
+      return res.status(500).json({
+        ok: false,
+        error: "GMAIL_USER is missing.",
+        code: "MISSING_GMAIL_USER",
+      });
+    }
+
+    if (!gmailAppPassword) {
+      console.error("GMAIL_APP_PASSWORD is missing");
+
+      return res.status(500).json({
+        ok: false,
+        error: "GMAIL_APP_PASSWORD is missing.",
+        code: "MISSING_GMAIL_APP_PASSWORD",
+      });
+    }
+
+    if (gmailAppPassword.length !== 16) {
       console.error(
-        "Missing GMAIL_USER or GMAIL_APP_PASSWORD"
+        "Invalid App Password length:",
+        gmailAppPassword.length
       );
 
       return res.status(500).json({
         ok: false,
-        error: "Email environment variables are missing.",
-        code: "MISSING_ENV",
+        error: `App Password length is ${gmailAppPassword.length}, expected 16.`,
+        code: "INVALID_APP_PASSWORD_LENGTH",
       });
     }
 
@@ -66,6 +99,7 @@ export default async function handler(req, res) {
       return res.status(400).json({
         ok: false,
         error: "Please fill in all required fields.",
+        code: "MISSING_FIELDS",
       });
     }
 
@@ -78,10 +112,12 @@ export default async function handler(req, res) {
       condition: clean(condition, 80),
       zipCode: clean(zipCode, 30),
       description: clean(
-        description || "No details",
+        description || "No additional details",
         2000
       ),
     };
+
+    console.log("Creating Gmail SMTP transporter...");
 
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
@@ -98,8 +134,45 @@ export default async function handler(req, res) {
       socketTimeout: 20000,
     });
 
-    // يتأكد من Gmail قبل الإرسال
-    await transporter.verify();
+    console.log("Verifying Gmail SMTP connection...");
+
+    try {
+      await transporter.verify();
+
+      console.log("Gmail SMTP verification successful.");
+    } catch (verifyError) {
+      console.error("GMAIL VERIFY ERROR:", {
+        message:
+          verifyError instanceof Error
+            ? verifyError.message
+            : String(verifyError),
+
+        code:
+          verifyError &&
+          typeof verifyError === "object" &&
+          "code" in verifyError
+            ? String(verifyError.code)
+            : "UNKNOWN",
+
+        response:
+          verifyError &&
+          typeof verifyError === "object" &&
+          "response" in verifyError
+            ? String(verifyError.response)
+            : "NO_RESPONSE",
+
+        responseCode:
+          verifyError &&
+          typeof verifyError === "object" &&
+          "responseCode" in verifyError
+            ? String(verifyError.responseCode)
+            : "NO_RESPONSE_CODE",
+      });
+
+      throw verifyError;
+    }
+
+    console.log("Sending quote email...");
 
     const info = await transporter.sendMail({
       from: `Quick Cash Junk Cars LLC <${gmailUser}>`,
@@ -107,70 +180,122 @@ export default async function handler(req, res) {
       to: RECIPIENT_EMAIL,
 
       subject:
-        `New Quote Request - ` +
-        `${data.year} ${data.make} ${data.model}`,
+        `New Quote Request - ${data.year} ${data.make} ${data.model}`,
 
-      text: [
-        "New Quote Request",
-        "",
-        `Name: ${data.name}`,
-        `Phone: ${data.phone}`,
-        `Car: ${data.year} ${data.make} ${data.model}`,
-        `Condition: ${data.condition}`,
-        `ZIP Code: ${data.zipCode}`,
-        `Additional Details: ${data.description}`,
-      ].join("\n"),
+      text: `
+NEW QUOTE REQUEST
+
+Name:
+${data.name}
+
+Phone:
+${data.phone}
+
+Vehicle:
+${data.year} ${data.make} ${data.model}
+
+Condition:
+${data.condition}
+
+ZIP Code:
+${data.zipCode}
+
+Additional Details:
+${data.description}
+      `,
 
       html: `
-        <div style="
-          font-family: Arial, sans-serif;
-          line-height: 1.6;
-          color: #111;
-        ">
-          <h2>New Quote Request</h2>
+        <div
+          style="
+            font-family: Arial, sans-serif;
+            max-width: 650px;
+            margin: 0 auto;
+            color: #111827;
+          "
+        >
+          <div
+            style="
+              background: #16a34a;
+              color: white;
+              padding: 20px;
+              border-radius: 8px 8px 0 0;
+            "
+          >
+            <h2 style="margin:0;">
+              New Quote Request
+            </h2>
+          </div>
 
-          <p>
-            <strong>Name:</strong>
-            ${data.name}
-          </p>
+          <div
+            style="
+              border: 1px solid #e5e7eb;
+              padding: 20px;
+              border-radius: 0 0 8px 8px;
+            "
+          >
+            <p>
+              <strong>Full Name:</strong><br>
+              ${data.name}
+            </p>
 
-          <p>
-            <strong>Phone:</strong>
-            ${data.phone}
-          </p>
+            <p>
+              <strong>Phone Number:</strong><br>
+              <a href="tel:${data.phone}">
+                ${data.phone}
+              </a>
+            </p>
 
-          <p>
-            <strong>Car:</strong>
-            ${data.year}
-            ${data.make}
-            ${data.model}
-          </p>
+            <hr>
 
-          <p>
-            <strong>Condition:</strong>
-            ${data.condition}
-          </p>
+            <p>
+              <strong>Year:</strong>
+              ${data.year}
+            </p>
 
-          <p>
-            <strong>ZIP Code:</strong>
-            ${data.zipCode}
-          </p>
+            <p>
+              <strong>Make:</strong>
+              ${data.make}
+            </p>
 
-          <p>
-            <strong>Additional Details:</strong>
-            ${data.description}
-          </p>
+            <p>
+              <strong>Model:</strong>
+              ${data.model}
+            </p>
+
+            <p>
+              <strong>Condition:</strong>
+              ${data.condition}
+            </p>
+
+            <p>
+              <strong>ZIP Code:</strong>
+              ${data.zipCode}
+            </p>
+
+            <hr>
+
+            <p>
+              <strong>Additional Details:</strong>
+            </p>
+
+            <p>
+              ${data.description}
+            </p>
+          </div>
         </div>
       `,
     });
 
-    console.log(
-      "Quote email sent successfully:",
-      info.messageId
-    );
+    console.log("EMAIL SENT SUCCESSFULLY:", {
+      messageId: info.messageId,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response,
+    });
 
     return res.status(200).json({
       ok: true,
+      message: "Quote sent successfully.",
     });
 
   } catch (error) {
@@ -186,15 +311,32 @@ export default async function handler(req, res) {
         ? String(error.code)
         : "EMAIL_SEND_FAILED";
 
-    console.error("Email send error:", {
+    const response =
+      error &&
+      typeof error === "object" &&
+      "response" in error
+        ? String(error.response)
+        : "";
+
+    const responseCode =
+      error &&
+      typeof error === "object" &&
+      "responseCode" in error
+        ? String(error.responseCode)
+        : "";
+
+    console.error("FINAL EMAIL ERROR:", {
       message,
       code,
+      response,
+      responseCode,
     });
 
     return res.status(500).json({
       ok: false,
       error: message,
       code,
+      responseCode,
     });
   }
 }
