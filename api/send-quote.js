@@ -22,57 +22,38 @@ export default async function handler(req, res) {
   }
 
   try {
-    // قراءة بيانات Gmail من Vercel Environment Variables
     const gmailUser = String(
       process.env.GMAIL_USER || ""
-    ).trim();
+    )
+      .trim()
+      .toLowerCase();
 
-    const rawPassword = String(
+    const gmailAppPassword = String(
       process.env.GMAIL_APP_PASSWORD || ""
-    );
-
-    // إزالة أي مسافات من App Password تلقائياً
-    const gmailAppPassword = rawPassword.replace(/\s+/g, "");
-
-    // هذا يظهر في Vercel Logs للتأكد من الإعدادات
-    // لا يقوم بطباعة الباسورد نفسه
-console.error("GMAIL SMTP CHECK V3:", {
-  user: gmailUser,
-  passwordLength: gmailAppPassword.length,
-  hasAtGmail: gmailUser.toLowerCase().endsWith("@gmail.com"),
-  environment: process.env.VERCEL_ENV || "unknown",
-});
+    ).replace(/\s+/g, "");
 
     if (!gmailUser) {
-      console.error("GMAIL_USER is missing");
-
       return res.status(500).json({
         ok: false,
-        error: "GMAIL_USER is missing.",
-        code: "MISSING_GMAIL_USER",
+        error: "GMAIL_USER is missing",
       });
     }
 
     if (!gmailAppPassword) {
-      console.error("GMAIL_APP_PASSWORD is missing");
-
       return res.status(500).json({
         ok: false,
-        error: "GMAIL_APP_PASSWORD is missing.",
-        code: "MISSING_GMAIL_APP_PASSWORD",
+        error: "GMAIL_APP_PASSWORD is missing",
       });
     }
 
     if (gmailAppPassword.length !== 16) {
-      console.error(
-        "Invalid App Password length:",
-        gmailAppPassword.length
-      );
+      console.error("Invalid Gmail App Password length:", {
+        length: gmailAppPassword.length,
+      });
 
       return res.status(500).json({
         ok: false,
-        error: `App Password length is ${gmailAppPassword.length}, expected 16.`,
-        code: "INVALID_APP_PASSWORD_LENGTH",
+        error: "Invalid Gmail App Password length",
       });
     }
 
@@ -99,7 +80,6 @@ console.error("GMAIL SMTP CHECK V3:", {
       return res.status(400).json({
         ok: false,
         error: "Please fill in all required fields.",
-        code: "MISSING_FIELDS",
       });
     }
 
@@ -117,8 +97,6 @@ console.error("GMAIL SMTP CHECK V3:", {
       ),
     };
 
-    console.log("Creating Gmail SMTP transporter...");
-
     const transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
       port: 465,
@@ -129,117 +107,63 @@ console.error("GMAIL SMTP CHECK V3:", {
         pass: gmailAppPassword,
       },
 
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-      socketTimeout: 20000,
+      connectionTimeout: 20000,
+      greetingTimeout: 20000,
+      socketTimeout: 30000,
     });
 
-    console.log("Verifying Gmail SMTP connection...");
-
-    try {
-      await transporter.verify();
-
-      console.log("Gmail SMTP verification successful.");
-    } catch (verifyError) {
-      console.error("GMAIL VERIFY ERROR:", {
-        message:
-          verifyError instanceof Error
-            ? verifyError.message
-            : String(verifyError),
-
-        code:
-          verifyError &&
-          typeof verifyError === "object" &&
-          "code" in verifyError
-            ? String(verifyError.code)
-            : "UNKNOWN",
-
-        response:
-          verifyError &&
-          typeof verifyError === "object" &&
-          "response" in verifyError
-            ? String(verifyError.response)
-            : "NO_RESPONSE",
-
-        responseCode:
-          verifyError &&
-          typeof verifyError === "object" &&
-          "responseCode" in verifyError
-            ? String(verifyError.responseCode)
-            : "NO_RESPONSE_CODE",
-      });
-
-      throw verifyError;
-    }
-
-    console.log("Sending quote email...");
+    await transporter.verify();
 
     const info = await transporter.sendMail({
-      from: `Quick Cash Junk Cars LLC <${gmailUser}>`,
-
+      from: `"Top Dollar Junk Cars" <${gmailUser}>`,
       to: RECIPIENT_EMAIL,
 
       subject:
         `New Quote Request - ${data.year} ${data.make} ${data.model}`,
 
-      text: `
-NEW QUOTE REQUEST
-
-Name:
-${data.name}
-
-Phone:
-${data.phone}
-
-Vehicle:
-${data.year} ${data.make} ${data.model}
-
-Condition:
-${data.condition}
-
-ZIP Code:
-${data.zipCode}
-
-Additional Details:
-${data.description}
-      `,
+      text: [
+        "NEW QUOTE REQUEST",
+        "",
+        `Name: ${data.name}`,
+        `Phone: ${data.phone}`,
+        `Vehicle: ${data.year} ${data.make} ${data.model}`,
+        `Condition: ${data.condition}`,
+        `ZIP Code: ${data.zipCode}`,
+        "",
+        "Additional Details:",
+        data.description,
+      ].join("\n"),
 
       html: `
-        <div
-          style="
-            font-family: Arial, sans-serif;
-            max-width: 650px;
-            margin: 0 auto;
-            color: #111827;
-          "
-        >
-          <div
-            style="
-              background: #16a34a;
-              color: white;
-              padding: 20px;
-              border-radius: 8px 8px 0 0;
-            "
-          >
-            <h2 style="margin:0;">
+        <div style="
+          font-family: Arial, sans-serif;
+          max-width: 650px;
+          margin: auto;
+          color: #111827;
+        ">
+          <div style="
+            background: #16a34a;
+            color: white;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+          ">
+            <h2 style="margin: 0;">
               New Quote Request
             </h2>
           </div>
 
-          <div
-            style="
-              border: 1px solid #e5e7eb;
-              padding: 20px;
-              border-radius: 0 0 8px 8px;
-            "
-          >
+          <div style="
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+          ">
             <p>
-              <strong>Full Name:</strong><br>
+              <strong>Name:</strong><br>
               ${data.name}
             </p>
 
             <p>
-              <strong>Phone Number:</strong><br>
+              <strong>Phone:</strong><br>
               <a href="tel:${data.phone}">
                 ${data.phone}
               </a>
@@ -286,11 +210,9 @@ ${data.description}
       `,
     });
 
-    console.log("EMAIL SENT SUCCESSFULLY:", {
+    console.log("Quote email sent successfully:", {
       messageId: info.messageId,
       accepted: info.accepted,
-      rejected: info.rejected,
-      response: info.response,
     });
 
     return res.status(200).json({
@@ -299,44 +221,30 @@ ${data.description}
     });
 
   } catch (error) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : String(error);
+    console.error("Gmail SMTP error:", {
+      message:
+        error instanceof Error
+          ? error.message
+          : String(error),
 
-    const code =
-      error &&
-      typeof error === "object" &&
-      "code" in error
-        ? String(error.code)
-        : "EMAIL_SEND_FAILED";
+      code:
+        error &&
+        typeof error === "object" &&
+        "code" in error
+          ? String(error.code)
+          : "UNKNOWN",
 
-    const response =
-      error &&
-      typeof error === "object" &&
-      "response" in error
-        ? String(error.response)
-        : "";
-
-    const responseCode =
-      error &&
-      typeof error === "object" &&
-      "responseCode" in error
-        ? String(error.responseCode)
-        : "";
-
-    console.error("FINAL EMAIL ERROR:", {
-      message,
-      code,
-      response,
-      responseCode,
+      responseCode:
+        error &&
+        typeof error === "object" &&
+        "responseCode" in error
+          ? String(error.responseCode)
+          : "UNKNOWN",
     });
 
     return res.status(500).json({
       ok: false,
-      error: message,
-      code,
-      responseCode,
+      error: "Failed to send quote email.",
     });
   }
 }
