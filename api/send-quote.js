@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
     // هذا يظهر في Vercel Logs للتأكد من الإعدادات
     // لا يقوم بطباعة الباسورد نفسه
-console.log("GMAIL SMTP CHECK:", {
+console.error("GMAIL SMTP CHECK V3:", {
   user: gmailUser,
   passwordLength: gmailAppPassword.length,
   hasAtGmail: gmailUser.toLowerCase().endsWith("@gmail.com"),
