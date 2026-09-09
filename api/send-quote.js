@@ -36,12 +36,12 @@ export default async function handler(req, res) {
 
     // هذا يظهر في Vercel Logs للتأكد من الإعدادات
     // لا يقوم بطباعة الباسورد نفسه
-    console.log("GMAIL SMTP CHECK:", {
-      user: gmailUser,
-      passwordLength: gmailAppPassword.length,
-      hasAtGmail: gmailUser.endsWith("@gmail.com"),
-      environment: process.env.VERCEL_ENV || "unknown",
-    });
+console.log("GMAIL SMTP CHECK:", {
+  user: gmailUser,
+  passwordLength: gmailAppPassword.length,
+  hasAtGmail: gmailUser.toLowerCase().endsWith("@gmail.com"),
+  environment: process.env.VERCEL_ENV || "unknown",
+});
 
     if (!gmailUser) {
       console.error("GMAIL_USER is missing");
