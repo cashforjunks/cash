@@ -10,12 +10,39 @@ function clean(value, maxLength = 500) {
 }
 
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store");
+
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method not allowed" });
+
+    return res.status(405).json({
+      ok: false,
+      error: "Method not allowed",
+    });
   }
 
   try {
+    const gmailUser = String(
+      process.env.GMAIL_USER || ""
+    ).trim();
+
+    // يشيل المسافات من Google App Password تلقائياً
+    const gmailAppPassword = String(
+      process.env.GMAIL_APP_PASSWORD || ""
+    ).replace(/\s+/g, "");
+
+    if (!gmailUser || !gmailAppPassword) {
+      console.error(
+        "Missing GMAIL_USER or GMAIL_APP_PASSWORD"
+      );
+
+      return res.status(500).json({
+        ok: false,
+        error: "Email environment variables are missing.",
+        code: "MISSING_ENV",
+      });
+    }
+
     const {
       name,
       phone,
@@ -27,13 +54,19 @@ export default async function handler(req, res) {
       description,
     } = req.body || {};
 
-    if (!name || !phone || !year || !make || !model || !condition || !zipCode) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
-      console.error("Missing Gmail environment variables");
-      return res.status(500).json({ error: "Email service is not configured" });
+    if (
+      !name ||
+      !phone ||
+      !year ||
+      !make ||
+      !model ||
+      !condition ||
+      !zipCode
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: "Please fill in all required fields.",
+      });
     }
 
     const data = {
@@ -44,21 +77,39 @@ export default async function handler(req, res) {
       model: clean(model, 80),
       condition: clean(condition, 80),
       zipCode: clean(zipCode, 30),
-      description: clean(description || "No details", 2000),
+      description: clean(
+        description || "No details",
+        2000
+      ),
     };
 
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+
       auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
+        user: gmailUser,
+        pass: gmailAppPassword,
       },
+
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+      socketTimeout: 20000,
     });
 
-    await transporter.sendMail({
-      from: `Car Quote Website <${process.env.GMAIL_USER}>`,
+    // يتأكد من Gmail قبل الإرسال
+    await transporter.verify();
+
+    const info = await transporter.sendMail({
+      from: `Quick Cash Junk Cars LLC <${gmailUser}>`,
+
       to: RECIPIENT_EMAIL,
-      subject: `New Quote Request - ${data.year} ${data.make} ${data.model}`,
+
+      subject:
+        `New Quote Request - ` +
+        `${data.year} ${data.make} ${data.model}`,
+
       text: [
         "New Quote Request",
         "",
@@ -66,23 +117,84 @@ export default async function handler(req, res) {
         `Phone: ${data.phone}`,
         `Car: ${data.year} ${data.make} ${data.model}`,
         `Condition: ${data.condition}`,
-        `ZIP: ${data.zipCode}`,
-        `Details: ${data.description}`,
+        `ZIP Code: ${data.zipCode}`,
+        `Additional Details: ${data.description}`,
       ].join("\n"),
+
       html: `
-        <h2>New Quote Request</h2>
-        <p><strong>Name:</strong> ${data.name}</p>
-        <p><strong>Phone:</strong> ${data.phone}</p>
-        <p><strong>Car:</strong> ${data.year} ${data.make} ${data.model}</p>
-        <p><strong>Condition:</strong> ${data.condition}</p>
-        <p><strong>ZIP:</strong> ${data.zipCode}</p>
-        <p><strong>Details:</strong> ${data.description}</p>
+        <div style="
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #111;
+        ">
+          <h2>New Quote Request</h2>
+
+          <p>
+            <strong>Name:</strong>
+            ${data.name}
+          </p>
+
+          <p>
+            <strong>Phone:</strong>
+            ${data.phone}
+          </p>
+
+          <p>
+            <strong>Car:</strong>
+            ${data.year}
+            ${data.make}
+            ${data.model}
+          </p>
+
+          <p>
+            <strong>Condition:</strong>
+            ${data.condition}
+          </p>
+
+          <p>
+            <strong>ZIP Code:</strong>
+            ${data.zipCode}
+          </p>
+
+          <p>
+            <strong>Additional Details:</strong>
+            ${data.description}
+          </p>
+        </div>
       `,
     });
 
-    return res.status(200).json({ ok: true });
+    console.log(
+      "Quote email sent successfully:",
+      info.messageId
+    );
+
+    return res.status(200).json({
+      ok: true,
+    });
+
   } catch (error) {
-    console.error("Email send error:", error);
-    return res.status(500).json({ error: "Failed to send email" });
+    const message =
+      error instanceof Error
+        ? error.message
+        : String(error);
+
+    const code =
+      error &&
+      typeof error === "object" &&
+      "code" in error
+        ? String(error.code)
+        : "EMAIL_SEND_FAILED";
+
+    console.error("Email send error:", {
+      message,
+      code,
+    });
+
+    return res.status(500).json({
+      ok: false,
+      error: message,
+      code,
+    });
   }
 }
